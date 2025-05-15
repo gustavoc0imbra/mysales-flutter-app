@@ -3,18 +3,19 @@ import 'screens/cliente_form_screen.dart';
 import 'screens/endereco_form_screen.dart';
 import 'screens/cliente_list_screen.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MySales());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MySales extends StatelessWidget {
+  const MySales({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Sistema de Vendas',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)
+      ),
       initialRoute: '/', // Tela inicial agora é Novo Cliente
       routes: {
         '/': (context) => const ClienteFormScreen(),

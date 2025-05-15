@@ -32,4 +32,20 @@ class ClienteService {
 
     return {"success": true, "cliente": dto};
   }
+
+  Future<Map<String, dynamic>> buscarClientes() async {
+    final Response response = await httpCli.get(
+      Uri.parse(this.url),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if(response.statusCode != HttpStatus.ok) {
+      return {"success": false, "body": response.body};
+    }
+
+    String json = utf8.decode(response.bodyBytes);
+    List<dynamic> data = jsonDecode(json);
+
+    return {"success": true, "data": data};
+  }
 }

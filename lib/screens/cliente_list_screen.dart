@@ -1,33 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:mysalesflutterapp/services/ClienteService.dart';
 
-class ClienteListScreen extends StatelessWidget {
+class ClienteListScreen extends StatefulWidget {
   const ClienteListScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Lista fictícia de clientes
-    final List<Map<String, String>> clientes = [
-      {'nome': 'Matheus Maximiano', 'email': 'matheus@email.com'},
-      {'nome': 'Gustavo Silva', 'email': 'gustavo@email.com'},
-      {'nome': 'Eduarda Gusmao', 'email': 'eduarda@email.com'},
-    ];
+  _ClienteListState createState() => _ClienteListState();
+}
 
+class _ClienteListState extends State<ClienteListScreen> {
+
+  final ClienteService customerService = ClienteService();
+  List<dynamic> customers = List.empty();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCustomers();
+  }
+
+  Future<void> fetchCustomers() async {
+    Map<String, dynamic> result = await customerService.buscarClientes();
+
+    if(!result['success']) {
+      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
+        title: const Text("Atenção!"),
+        content: Text("Ocorreu um erro ao buscar clientes!\n${result['body']}"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => {
+              Navigator.pop(context, 'Ok'),
+            },
+            child: const Text("Ok")
+          )
+        ],
+      ));
+      return;
+    }
+
+    setState(() {
+      customers = result['data'];
+    });
+
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Clientes'), centerTitle: true),
       body: ListView.builder(
-        itemCount: clientes.length,
+        itemCount: customers.length,
         itemBuilder: (context, index) {
-          final cliente = clientes[index];
-          final nome = cliente['nome']!;
-          final email = cliente['email']!;
-          final inicial = nome.isNotEmpty ? nome[0].toUpperCase() : '?';
+          final customer = customers[index];
+          final inicial = customer['name'].isNotEmpty ? customer['name'][0].toUpperCase() : '?';
 
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ListTile(
               leading: CircleAvatar(child: Text(inicial)),
-              title: Text(nome),
-              subtitle: Text(email),
+              title: Text(customer['name']),
+              subtitle: Text(customer['email']),
             ),
           );
         },

@@ -15,6 +15,7 @@ class _AddressFormState extends State<AddressFormScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _zipCodeController = TextEditingController();
   final TextEditingController _addressnumberController = TextEditingController();
+  final TextEditingController _neighborhoodController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
 
@@ -25,6 +26,26 @@ class _AddressFormState extends State<AddressFormScreen> {
     }
 
     Map<String, dynamic> result = await addressservice.searchAddress(zipCode);
+    
+    if(!result['success']) {
+      showDialog(context: context, builder: (BuildContext builder) => AlertDialog(
+        title: const Text("Erro"),
+        content: Text("Erro ao buscar CEP: ${result['body']}!"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => {
+              Navigator.pop(context, 'Ok'),
+            },
+            child: const Text("Ok")
+          )
+        ],
+      ));
+    }
+
+    _neighborhoodController.text = result['address'].neighborhood;
+    _cityController.text = result['address'].city;
+    _streetController.text = result['address'].street;
+
   }
 
   @override
@@ -71,7 +92,7 @@ class _AddressFormState extends State<AddressFormScreen> {
               ),
               const SizedBox(height: 10),
               TextField(
-                /* controller: _cityController, */
+                controller: _neighborhoodController,
                 decoration: const InputDecoration(labelText: 'Bairro'),
               ),
               const SizedBox(height: 10),

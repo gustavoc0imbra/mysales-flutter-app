@@ -9,6 +9,6 @@ class Address {
   Address(this.zipCode, this.street, this.neighborhood, this.city);
 
   static fromJson(Map<String, dynamic> json) {
-    return Address(json['zipCode'], json['street'], json['neighboorhood'], json['city']);
+    return Address(json['zipCode'], json['street'], json['neighborhood'], json['city']);
   }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart';
 import 'package:http/http.dart' as httpCli;
+import 'package:mysalesflutterapp/models/Address.dart';
 
 class Addressservice {
   final String _url = "http://localhost:8080/api/v0/customer/{customerId}/address";
@@ -11,7 +12,7 @@ class Addressservice {
   Future<Map<String, dynamic>> searchAddress(String zipCode) async {
     final Response response = await httpCli.get(
       Uri.parse("${this._fetchAddressUrl}/$zipCode"),
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json; charset=utf8'},
     );
 
     if(response.statusCode != HttpStatus.ok) {
@@ -22,8 +23,8 @@ class Addressservice {
 
     Map<String, dynamic> json = jsonDecode(data);
 
-    print(json);
+    Address address = Address.fromJson(json);
 
-    return {"success": true, "customer": json};
+    return {"success": true, "address": address};
   }
 }

@@ -84,8 +84,45 @@ class _CustomerListState extends State<CustomerListScreen> {
                   title: Text("${customer['name']} - ${customer['id'].toString()}"),
                   subtitle: Text(customer['email']),
                   textColor: Colors.white,
+                  trailing: PopupMenuButton<void>(
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                      PopupMenuItem(
+                        onTap: () => Navigator.pushNamed(context, '/save-customer'),
+                        child: const Text("Editar")
+                      ),
+                      PopupMenuItem(
+                        onTap: () => Navigator.pushNamed(context, '/customer/address'),
+                        child: const Text("Endereços")
+                      ),
+                      PopupMenuItem(
+                        onTap: () => {
+                          showDialog(context: context, builder: (BuildContext builder) => AlertDialog(
+                            title: Text("Atenção"),
+                            content: Text("Deseja realmente deletar o cliente ${customer['name']}?"),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                onPressed: () async => {
+                                  await deleteCustomer(customer['id']),
+                                  Navigator.pop(context),
+                                  fetchCustomers()
+                                },
+                                child: const Text("Sim")
+                              ),
+                              ElevatedButton(
+                                onPressed: () => {
+                                  Navigator.pop(context),
+                                },
+                                child: const Text("Não")
+                              )
+                            ],
+                          ))
+                        },
+                        child: const Text("Excluir"),
+                      ),
+                    ]
+                  ),
                 ),
-                Padding(
+                /* Padding(
                   padding: EdgeInsets.all(8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -129,7 +166,7 @@ class _CustomerListState extends State<CustomerListScreen> {
                       )
                     ],
                   ),
-                )
+                ) */
                 
               ],
               

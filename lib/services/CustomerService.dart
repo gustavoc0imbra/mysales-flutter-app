@@ -47,4 +47,17 @@ class CustomerService {
 
     return {"success": true, "data": data};
   }
+
+  Future<Map<String, dynamic>> deleteCustomer(int id) async {
+    final Response response = await httpCli.delete(
+      Uri.parse("${this.url}/${id}"),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if(response.statusCode != HttpStatus.noContent) {
+      return {"success": false, "body": response.body};
+    }
+
+    return {"success": true, "data": "Registro deletado com sucesso!"};
+  }
 }

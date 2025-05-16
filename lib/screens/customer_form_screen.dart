@@ -79,10 +79,11 @@ class _CustomerFormState extends State<CustomerFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Novo Cliente'), centerTitle: true),
+      appBar: AppBar(title: const Text('NOVO CLIENTE'), centerTitle: true,  backgroundColor: Colors.blue,),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Form(
               child: Column(
@@ -116,77 +117,71 @@ class _CustomerFormState extends State<CustomerFormScreen> {
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: FilledButton(
                 onPressed: saveCustomer,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
                 child: const Text('Salvar'),
               ),
             ),
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: FilledButton(
+                onPressed: () {},
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
+                child: const Text('Cancelar'),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/endereco');
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
                 child: const Text('Endereços'),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/lista-clientes');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Text('Clientes'),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Text('Cancelar'),
               ),
             ),
           ],
         ),
       ),
       bottomNavigationBar: BottomAppBar(
+        color: Colors.blue,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: const [
-              Icon(Icons.group),
-              SizedBox(width: 20),
-              Icon(Icons.person),
-              SizedBox(width: 20),
-              Icon(Icons.settings),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.group, color: Colors.white),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/');
+                },
+                tooltip: "Clientes",
+                isSelected: true,
+              ),
+              IconButton(
+                icon: const Icon(Icons.category_rounded, color: Colors.white),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/save-customer');
+                },
+                tooltip: "Produtos",
+              ),
+              IconButton(
+                icon: const Icon(Icons.shopping_cart, color: Colors.white),
+                onPressed: () {
+                  //Ir para tela de vendas
+                },
+                tooltip: "Vendas",
+              ),
+              IconButton(
+                icon: const Icon(Icons.settings, color: Colors.white),
+                onPressed: () {
+                  // ação futura
+                },
+                tooltip: "Configurações",
+              ),
             ],
           ),
         ),

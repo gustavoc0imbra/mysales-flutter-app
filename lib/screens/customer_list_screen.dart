@@ -44,10 +44,30 @@ class _CustomerListState extends State<CustomerListScreen> {
 
   }
 
+  Future<void> deleteCustomer(int id) async {
+    Map<String, dynamic> result = await customerService.deleteCustomer(id);
+
+    if(!result['success']) {
+      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
+        title: const Text("Atenção!"),
+        content: Text("Ocorreu um erro ao deletar cliente!\n${result['body']}"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => {
+              Navigator.pop(context, 'Ok'),
+            },
+            child: const Text("Ok")
+          )
+        ],
+      ));
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Clientes'), centerTitle: true),
+      appBar: AppBar(title: const Text('CLIENTES'), centerTitle: true, backgroundColor: Colors.blue,),
       body: ListView.builder(
         itemCount: customers.length,
         itemBuilder: (context, index) {
@@ -56,43 +76,109 @@ class _CustomerListState extends State<CustomerListScreen> {
 
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ListTile(
-              leading: CircleAvatar(child: Text(inicial)),
-              title: Text(customer['name']),
-              subtitle: Text(customer['email']),
+            color: Colors.blueAccent,
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  leading: CircleAvatar(child: Text(inicial), backgroundColor: Colors.white,),
+                  title: Text("${customer['name']} - ${customer['id'].toString()}"),
+                  subtitle: Text(customer['email']),
+                  textColor: Colors.white,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      FilledButton.icon(
+                        onPressed: () => Navigator.pushNamed(context, '/save-customer'),
+                        icon: Icon(Icons.edit),
+                        label: const Text("Editar")
+                      ),
+                      SizedBox(width: 10),
+                      FilledButton.icon(
+                        onPressed: () => Navigator.pushNamed(context, '/customer/address'),
+                        icon: Icon(Icons.home),
+                        label: const Text("Editar")
+                      ),
+                      SizedBox(width: 10,),
+                      FilledButton.icon(
+                        onPressed: () => {
+                          showDialog(context: context, builder: (BuildContext builder) => AlertDialog(
+                            title: Text("Atenção"),
+                            content: Text("Deseja realmente deletar o cliente ${customer['name']}?"),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                onPressed: () async => {
+                                  await deleteCustomer(customer['id']),
+                                  Navigator.pop(context),
+                                  fetchCustomers()
+                                },
+                                child: const Text("Sim")
+                              ),
+                              ElevatedButton(
+                                onPressed: () => {
+                                  Navigator.pop(context),
+                                },
+                                child: const Text("Não")
+                              )
+                            ],
+                          ))
+                        },
+                        label: const Text("Deletar")
+                      )
+                    ],
+                  ),
+                )
+                
+              ],
+              
             ),
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => {
+          Navigator.pushNamed(context, '/save-customer')
+        },
+        tooltip: "Adicionar",
+        child: const Icon(Icons.add)
+      ),
       bottomNavigationBar: BottomAppBar(
+        color: Colors.blue,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(Icons.delete, color: Colors.red),
+                icon: const Icon(Icons.group, color: Colors.white),
                 onPressed: () {
-                  // ação de deletar
+                  Navigator.pushNamed(context, '/');
                 },
+                tooltip: "Clientes",
+                isSelected: true,
               ),
               IconButton(
-                icon: const Icon(Icons.edit, color: Colors.orange),
+                icon: const Icon(Icons.category_rounded, color: Colors.white),
                 onPressed: () {
-                  // ação de editar
+                  // Ir para tela de produtos
                 },
+                tooltip: "Produtos",
               ),
               IconButton(
-                icon: const Icon(Icons.add, color: Colors.blue),
+                icon: const Icon(Icons.shopping_cart, color: Colors.white),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/save-customer');
+                  //Ir para tela de vendas
                 },
+                tooltip: "Vendas",
               ),
               IconButton(
-                icon: const Icon(Icons.settings, color: Colors.grey),
+                icon: const Icon(Icons.settings, color: Colors.white),
                 onPressed: () {
                   // ação futura
                 },
+                tooltip: "Configurações",
               ),
             ],
           ),

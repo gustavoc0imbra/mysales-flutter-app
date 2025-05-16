@@ -23,11 +23,7 @@ class CustomerService {
 
     Map<String, dynamic> json = jsonDecode(data);
 
-    print("Antes Erro");
-
     Customer result = Customer.fromJson(json);
-
-    print("Depois erro");
 
     return {"success": true, "customer": result};
   }

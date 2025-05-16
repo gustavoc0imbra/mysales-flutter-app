@@ -1,34 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mysalesflutterapp/services/AddressService.dart';
 
-class AddressFormScreen extends StatelessWidget {
+class AddressFormScreen extends StatefulWidget {
   const AddressFormScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController _descriptionController = TextEditingController();
-    final TextEditingController _cepController = TextEditingController();
-    final TextEditingController _addressnumberController = TextEditingController();
-    final TextEditingController _cityController = TextEditingController();
-    final TextEditingController _streetController = TextEditingController();
+  _AddressFormState createState() => _AddressFormState();
+}
 
+class _AddressFormState extends State<AddressFormScreen> {
+  final Addressservice addressservice = Addressservice();
+
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _zipCodeController = TextEditingController();
+  final TextEditingController _addressnumberController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _streetController = TextEditingController();
+
+  void fetchZipCode(String zipCode) async {
+    
+    if(zipCode.length != 8) {
+      return;
+    }
+
+    Map<String, dynamic> result = await addressservice.searchAddress(zipCode);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Salvar Endereço'), centerTitle: true),
+      appBar: AppBar(title: const Text('SALVAR ENDEREÇO'), centerTitle: true, backgroundColor: Colors.blue,),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
+        child: Form(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(labelText: 'Descrição'),
+                maxLength: 50,
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: _cepController,
+                      controller: _zipCodeController,
                       decoration: const InputDecoration(labelText: 'CEP'),
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      maxLength: 8,
+                      onChanged: (value) => fetchZipCode(value),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -36,9 +61,18 @@ class AddressFormScreen extends StatelessWidget {
                     child: TextField(
                       controller: _addressnumberController,
                       decoration: const InputDecoration(labelText: 'Número'),
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                      maxLength: 4,
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                /* controller: _cityController, */
+                decoration: const InputDecoration(labelText: 'Bairro'),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -53,12 +87,11 @@ class AddressFormScreen extends StatelessWidget {
               const SizedBox(height: 20),
               Column(
                 children: [
-                  ElevatedButton(
+                  FilledButton(
                     onPressed: () {
                       // ação de salvar
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                    style: FilledButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -67,12 +100,12 @@ class AddressFormScreen extends StatelessWidget {
                     child: const Text('Salvar'),
                   ),
                   const SizedBox(height: 10),
-                  ElevatedButton(
+                  FilledButton(
                     onPressed: () {
                       // ação de cancelar
                       Navigator.pop(context);
                     },
-                    style: ElevatedButton.styleFrom(
+                    style: FilledButton.styleFrom(
                       backgroundColor: Colors.red,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -85,31 +118,43 @@ class AddressFormScreen extends StatelessWidget {
               ),
             ],
           ),
-        ),
+        )
       ),
       bottomNavigationBar: BottomAppBar(
+        color: Colors.blue,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(Icons.groups),
+                icon: const Icon(Icons.group, color: Colors.white),
                 onPressed: () {
-                  // ação para tela de grupo
+                  Navigator.pushNamed(context, '/');
                 },
+                tooltip: "Clientes",
+                isSelected: true,
               ),
               IconButton(
-                icon: const Icon(Icons.person),
+                icon: const Icon(Icons.category_rounded, color: Colors.white),
                 onPressed: () {
-                  // ação para tela de pessoa
+                  // Ir para tela de produtos
                 },
+                tooltip: "Produtos",
               ),
               IconButton(
-                icon: const Icon(Icons.settings),
+                icon: const Icon(Icons.shopping_cart, color: Colors.white),
                 onPressed: () {
-                  // ação para configurações
+                  //Ir para tela de vendas
                 },
+                tooltip: "Vendas",
+              ),
+              IconButton(
+                icon: const Icon(Icons.settings, color: Colors.white),
+                onPressed: () {
+                  // ação futura
+                },
+                tooltip: "Configurações",
               ),
             ],
           ),

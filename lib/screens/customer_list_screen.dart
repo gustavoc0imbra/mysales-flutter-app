@@ -88,7 +88,7 @@ class _CustomerListState extends State<CustomerListScreen> {
                 Padding(
                   padding: EdgeInsets.all(8),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       FilledButton.icon(
                         onPressed: () => Navigator.pushNamed(context, '/save-customer'),
@@ -99,7 +99,7 @@ class _CustomerListState extends State<CustomerListScreen> {
                       FilledButton.icon(
                         onPressed: () => Navigator.pushNamed(context, '/customer/address'),
                         icon: Icon(Icons.home),
-                        label: const Text("Editar")
+                        label: const Text("End.")
                       ),
                       SizedBox(width: 10,),
                       FilledButton.icon(

@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:mysalesflutterapp/models/Cliente.dart';
-import 'package:mysalesflutterapp/services/ClienteService.dart';
+import 'package:mysalesflutterapp/models/Customer.dart';
+import 'package:mysalesflutterapp/services/CustomerService.dart';
 
-class ClienteFormScreen extends StatefulWidget {
+class CustomerFormScreen extends StatefulWidget {
   @override
-  _ClienteFormState createState() => _ClienteFormState();
+  _CustomerFormState createState() => _CustomerFormState();
 
-  const ClienteFormScreen({super.key});
+  const CustomerFormScreen({super.key});
 }
 
-class _ClienteFormState extends State<ClienteFormScreen> {
+class _CustomerFormState extends State<CustomerFormScreen> {
 
-  final ClienteService clienteService = ClienteService();
+  final CustomerService customerService = CustomerService();
 
-  final TextEditingController _nomeController = TextEditingController();
-  final TextEditingController _sobrenomeController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-  bool verificaCampos() {
-    return _nomeController.text.isEmpty || _sobrenomeController.text.isEmpty || _emailController.text.isEmpty;
+  bool verifyFields() {
+    return _nameController.text.isEmpty || _lastnameController.text.isEmpty || _emailController.text.isEmpty;
   }
 
-  void salvarCliente() async {
+  void saveCustomer() async {
 
-    if(verificaCampos()) {
+    if(verifyFields()) {
       showDialog(context: context, builder: (BuildContext build) => AlertDialog(
         title: const Text("Atenção!"),
         content: Text("Favor preencher todos os campos!"),
@@ -39,14 +39,15 @@ class _ClienteFormState extends State<ClienteFormScreen> {
       return;
     }
 
-    Cliente cliente = Cliente(_nomeController.text, _sobrenomeController.text, _emailController.text);
+    Customer customer = Customer(_nameController.text, _lastnameController.text, _emailController.text);
 
-    Map<String, dynamic> resultado = await clienteService.salvarCliente(cliente);
 
-    if (!resultado['success']) {
+    Map<String, dynamic> result = await customerService.saveCustomer(customer);
+
+    if (!result['success']) {
       showDialog(context: context, builder: (BuildContext build) => AlertDialog(
         title: const Text("Atenção!"),
-        content: Text("Ocorreu um erro ao salvar o cliente!\n${resultado['body']}"),
+        content: Text("Ocorreu um erro ao salvar o cliente!\n${result['body']}"),
         actions: <Widget>[
           TextButton(
             onPressed: () => {
@@ -61,12 +62,12 @@ class _ClienteFormState extends State<ClienteFormScreen> {
 
     showDialog(context: context, builder: (BuildContext build) => AlertDialog(
       title: const Text("Sucesso!"),
-      content: Text("O cliente ${resultado['cliente'].name} foi adicionado com sucesso!\nAo clicar em OK você será redirecionado para pagína de clientes."),
+      content: Text("O cliente ${result['customer'].name} foi adicionado com sucesso!\nAo clicar em OK você será redirecionado para pagína de clientes."),
       actions: <Widget>[
         TextButton(
           onPressed: () => {
             Navigator.pop(context, 'Ok'),
-            Navigator.pushNamed(context, '/lista-clientes')
+            Navigator.pushNamed(context, '/')
           },
           child: const Text("Ok")
         )
@@ -90,14 +91,14 @@ class _ClienteFormState extends State<ClienteFormScreen> {
                     children: [
                       Expanded(
                         child: TextField(
-                          controller: _nomeController,
+                          controller: _nameController,
                           decoration: const InputDecoration(labelText: 'Nome'),
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: TextField(
-                          controller: _sobrenomeController,
+                          controller: _lastnameController,
                           decoration: const InputDecoration(labelText: 'Sobrenome'),
                         ),
                       ),
@@ -116,7 +117,7 @@ class _ClienteFormState extends State<ClienteFormScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: salvarCliente,
+                onPressed: saveCustomer,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(

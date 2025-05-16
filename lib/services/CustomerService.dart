@@ -2,22 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
-import 'package:mysalesflutterapp/DTOs/ResponseSalvarClienteDTO.dart';
-import 'package:mysalesflutterapp/models/Cliente.dart';
+import 'package:mysalesflutterapp/models/Customer.dart';
 import 'package:http/http.dart' as httpCli;
 
-class ClienteService {
+class CustomerService {
   final String url = "http://localhost:8080/api/v0/customers";
 
-  Future<Map<String, dynamic>> salvarCliente(Cliente cliente) async {
+  Future<Map<String, dynamic>> saveCustomer(Customer customer) async {
     final Response response = await httpCli.post(
       Uri.parse(this.url),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'name': cliente.nome,
-        'lastName': cliente.sobrenome,
-        'email': cliente.email
-      })
+      body: jsonEncode(customer.toJson())
     );
 
     if(response.statusCode != HttpStatus.created) {
@@ -28,12 +23,16 @@ class ClienteService {
 
     Map<String, dynamic> json = jsonDecode(data);
 
-    ResponseSalvarClienteDTO dto = ResponseSalvarClienteDTO.fromJson(json);
+    print("Antes Erro");
 
-    return {"success": true, "cliente": dto};
+    Customer result = Customer.fromJson(json);
+
+    print("Depois erro");
+
+    return {"success": true, "customer": result};
   }
 
-  Future<Map<String, dynamic>> buscarClientes() async {
+  Future<Map<String, dynamic>> getCustomers() async {
     final Response response = await httpCli.get(
       Uri.parse(this.url),
       headers: {'Content-Type': 'application/json'},

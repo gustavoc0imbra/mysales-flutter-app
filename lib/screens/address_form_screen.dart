@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class EnderecoFormScreen extends StatelessWidget {
-  const EnderecoFormScreen({super.key});
+class AddressFormScreen extends StatelessWidget {
+  const AddressFormScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final descricaoController = TextEditingController();
-    final cepController = TextEditingController();
-    final numeroController = TextEditingController();
-    final cidadeController = TextEditingController();
-    final ruaController = TextEditingController();
+    final TextEditingController _descriptionController = TextEditingController();
+    final TextEditingController _cepController = TextEditingController();
+    final TextEditingController _addressnumberController = TextEditingController();
+    final TextEditingController _cityController = TextEditingController();
+    final TextEditingController _streetController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Salvar Endereço'), centerTitle: true),
@@ -19,7 +19,7 @@ class EnderecoFormScreen extends StatelessWidget {
           child: Column(
             children: [
               TextField(
-                controller: descricaoController,
+                controller: _descriptionController,
                 decoration: const InputDecoration(labelText: 'Descrição'),
               ),
               const SizedBox(height: 10),
@@ -27,14 +27,14 @@ class EnderecoFormScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: cepController,
+                      controller: _cepController,
                       decoration: const InputDecoration(labelText: 'CEP'),
                     ),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
-                      controller: numeroController,
+                      controller: _addressnumberController,
                       decoration: const InputDecoration(labelText: 'Número'),
                     ),
                   ),
@@ -42,12 +42,12 @@ class EnderecoFormScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextField(
-                controller: cidadeController,
+                controller: _cityController,
                 decoration: const InputDecoration(labelText: 'Cidade'),
               ),
               const SizedBox(height: 10),
               TextField(
-                controller: ruaController,
+                controller: _streetController,
                 decoration: const InputDecoration(labelText: 'Rua'),
               ),
               const SizedBox(height: 20),

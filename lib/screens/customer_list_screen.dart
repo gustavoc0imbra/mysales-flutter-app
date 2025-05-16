@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:mysalesflutterapp/services/ClienteService.dart';
+import 'package:mysalesflutterapp/services/CustomerService.dart';
 
-class ClienteListScreen extends StatefulWidget {
-  const ClienteListScreen({super.key});
+class CustomerListScreen extends StatefulWidget {
+  const CustomerListScreen({super.key});
 
   @override
-  _ClienteListState createState() => _ClienteListState();
+  _CustomerListState createState() => _CustomerListState();
 }
 
-class _ClienteListState extends State<ClienteListScreen> {
+class _CustomerListState extends State<CustomerListScreen> {
 
-  final ClienteService customerService = ClienteService();
+  final CustomerService customerService = CustomerService();
   List<dynamic> customers = List.empty();
 
   @override
@@ -20,7 +20,7 @@ class _ClienteListState extends State<ClienteListScreen> {
   }
 
   Future<void> fetchCustomers() async {
-    Map<String, dynamic> result = await customerService.buscarClientes();
+    Map<String, dynamic> result = await customerService.getCustomers();
 
     if(!result['success']) {
       showDialog(context: context, builder: (BuildContext build) => AlertDialog(
@@ -85,7 +85,7 @@ class _ClienteListState extends State<ClienteListScreen> {
               IconButton(
                 icon: const Icon(Icons.add, color: Colors.blue),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/');
+                  Navigator.pushNamed(context, '/save-customer');
                 },
               ),
               IconButton(

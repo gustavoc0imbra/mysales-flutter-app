@@ -57,14 +57,22 @@ class _AddressFormState extends State<AddressFormScreen> {
 
   void saveAddress() async {
 
+    if(customer.id == null) {
+      return;
+    }
+
     Address address = Address(
       null,
       customer.id,
       _descriptionController.text,
       _zipCodeController.text,
-      _streetController.text, neighborhood, city)
+      int.parse(_addressnumberController.text),
+      _streetController.text,
+      _neighborhoodController.text,
+      _cityController.text
+    );
 
-    Map<String, dynamic> result = await addressservice.saveAddress();
+    Map<String, dynamic> result = await addressservice.saveAddress(address);
   }
 
   @override
@@ -134,9 +142,7 @@ class _AddressFormState extends State<AddressFormScreen> {
               Column(
                 children: [
                   FilledButton(
-                    onPressed: () {
-                      // ação de salvar
-                    },
+                    onPressed: () => saveAddress(),
                     style: FilledButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),

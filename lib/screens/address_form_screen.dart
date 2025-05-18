@@ -12,7 +12,7 @@ class AddressFormScreen extends StatefulWidget {
 }
 
 class _AddressFormState extends State<AddressFormScreen> {
-  final Addressservice addressservice = Addressservice();
+  final AddressService addressservice = AddressService();
   Customer customer = Customer.withId(0, "", "", "", true);
 
   final TextEditingController _descriptionController = TextEditingController();
@@ -61,6 +61,10 @@ class _AddressFormState extends State<AddressFormScreen> {
       return;
     }
 
+    if(validateRequiredFields()) {
+      return;
+    }
+
     Address address = Address(
       null,
       customer.id,
@@ -73,6 +77,36 @@ class _AddressFormState extends State<AddressFormScreen> {
     );
 
     Map<String, dynamic> result = await addressservice.saveAddress(address);
+
+    if (!result['success']) {
+      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
+        title: const Text("Atenção!"),
+        content: Text("Ocorreu um erro ao salvar o endereço!\n${result['body']}"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => {
+              Navigator.pop(context, 'Ok'),
+            },
+            child: const Text("Ok")
+          )
+        ],
+      ));
+      return;
+    }
+
+    showDialog(context: context, builder: (BuildContext build) => AlertDialog(
+      title: const Text("Sucesso!"),
+      content: Text("O endereço de ${customer.name} foi adicionado com sucesso!\nAo clicar em OK você será redirecionado para pagína de endereços do cliente."),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => {
+            Navigator.pop(context, 'Ok'),
+            Navigator.pushNamed(context, '/customers/address')
+          },
+          child: const Text("Ok")
+        )
+      ],
+    ));
   }
 
   @override

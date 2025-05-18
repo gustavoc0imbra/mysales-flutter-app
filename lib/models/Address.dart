@@ -33,6 +33,15 @@ class Address {
   }
 
   static fromJson(Map<String, dynamic> json) {
-    return Address(json['id'], json['customerId'], json['description'], json['zipCode'], json['adressNumber'], json['street'], json['neighborhood'], json['city']);
+    return Address(
+      json['id'],
+      json['customerId'],
+      json['description'],
+      json['zipCode'],
+      int.parse(json['addressNumber']),
+      json['street'],
+      json['neighborhood'],
+      json['city']
+    );
   }
 }

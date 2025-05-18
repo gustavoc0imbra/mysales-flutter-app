@@ -1,31 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:mysalesflutterapp/services/CustomerService.dart';
+import 'package:mysalesflutterapp/models/Address.dart';
+import 'package:mysalesflutterapp/services/AddressService.dart';
 
-class CustomerListScreen extends StatefulWidget {
-  const CustomerListScreen({super.key});
+import '../models/Customer.dart';
+
+class AddressListScreen extends StatefulWidget {
+  const AddressListScreen({super.key});
 
   @override
-  _CustomerListState createState() => _CustomerListState();
+  _AddressListScreenState createState() => _AddressListScreenState();
 }
 
-class _CustomerListState extends State<CustomerListScreen> {
-
-  final CustomerService customerService = CustomerService();
-  List<dynamic> customers = List.empty();
+class _AddressListScreenState extends State<AddressListScreen> {
+  final AddressService addressService = AddressService();
+  Customer customer = Customer.withId(0, "", "", "", true);
+  List<dynamic> addresses = List.empty();
 
   @override
   void initState() {
     super.initState();
-    fetchCustomers();
+    /* fetchAddresses(); */
   }
 
-  Future<void> fetchCustomers() async {
-    Map<String, dynamic> result = await customerService.getCustomers();
+  void fetchAddresses() async {
+    Map<String, dynamic> result = await addressService.fetchAddresses(customer.id as int);
 
     if(!result['success']) {
       showDialog(context: context, builder: (BuildContext build) => AlertDialog(
         title: const Text("Atenção!"),
-        content: Text("Ocorreu um erro ao buscar clientes!\n${result['body']}"),
+        content: Text("Ocorreu um erro ao carregar endereços do cliente!\n${result['body']}"),
         actions: <Widget>[
           TextButton(
             onPressed: () => {
@@ -35,67 +38,47 @@ class _CustomerListState extends State<CustomerListScreen> {
           )
         ],
       ));
-      return;
     }
 
     setState(() {
-      customers = result['data'];
+      addresses = result['addresses'];
     });
-
-  }
-
-  Future<void> deleteCustomer(int id) async {
-    Map<String, dynamic> result = await customerService.deleteCustomer(id);
-
-    if(!result['success']) {
-      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
-        title: const Text("Atenção!"),
-        content: Text("Ocorreu um erro ao deletar cliente!\n${result['body']}"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => {
-              Navigator.pop(context, 'Ok'),
-            },
-            child: const Text("Ok")
-          )
-        ],
-      ));
-      return;
-    }
+    
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('CLIENTES'), centerTitle: true, backgroundColor: Colors.blue,),
-      body: ListView.builder(
-        itemCount: customers.length,
-        itemBuilder: (context, index) {
-          final customer = customers[index];
-          final inicial = customer['name'].isNotEmpty ? customer['name'][0].toUpperCase() : '?';
+    Customer customer = Customer.fromJson(ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>);
 
+    setState(() {
+      this.customer = customer;
+    });
+
+    return Scaffold(
+      appBar: AppBar(title: Text("Endereços de ${this.customer.name}"), backgroundColor: Colors.blue),
+      body: ListView.builder(
+        itemCount: addresses.length,
+        itemBuilder: (context, index) {
+          final address = addresses[index];
+          
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             color: Colors.blueAccent,
             child: Column(
               children: <Widget>[
                 ListTile(
-                  leading: CircleAvatar(child: Text(inicial), backgroundColor: Colors.white,),
-                  title: Text("${customer['name']} - ${customer['id'].toString()}"),
-                  subtitle: Text(customer['email']),
+                  leading: const CircleAvatar(backgroundColor: Colors.white, child: const Icon(Icons.map)),
+                  title: Text("${address['description']} - ${address['id']}"),
+                  subtitle: Text("${address['street']} - ${address['zipCode']}"),
                   textColor: Colors.white,
                   trailing: PopupMenuButton<void>(
                     itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                       PopupMenuItem(
-                        onTap: () => Navigator.pushNamed(context, '/save-customer'),
+                        onTap: () => Navigator.pushNamed(context, '/customer/address', arguments: customer),
                         child: const Text("Editar")
                       ),
                       PopupMenuItem(
-                        onTap: () => Navigator.pushNamed(context, '/customer/address', arguments: customer),
-                        child: const Text("Endereços")
-                      ),
-                      PopupMenuItem(
-                        onTap: () => {
+                        /* onTap: () => {
                           showDialog(context: context, builder: (BuildContext builder) => AlertDialog(
                             title: Text("Atenção"),
                             content: Text("Deseja realmente deletar o cliente ${customer['name']}?"),
@@ -116,7 +99,7 @@ class _CustomerListState extends State<CustomerListScreen> {
                               )
                             ],
                           ))
-                        },
+                        }, */
                         child: const Text("Excluir"),
                       ),
                     ]
@@ -126,14 +109,14 @@ class _CustomerListState extends State<CustomerListScreen> {
               
             ),
           );
-        },
+        }
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {
-          Navigator.pushNamed(context, '/save-customer')
+          fetchAddresses()
         },
-        tooltip: "Adicionar",
-        child: const Icon(Icons.add)
+        tooltip: "Buscar",
+        child: const Icon(Icons.search)
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.blue,

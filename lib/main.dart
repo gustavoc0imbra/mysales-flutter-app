@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/customer_form_screen.dart';
 import 'screens/address_form_screen.dart';
+import 'screens/address_list_screen.dart';
 import 'screens/customer_list_screen.dart';
 
 void main() => runApp(const MySales());
@@ -19,7 +20,8 @@ class MySales extends StatelessWidget {
       initialRoute: '/', // Tela inicial agora é Novo Cliente
       routes: {
         '/': (context) => const CustomerListScreen(),
-        '/customer/address': (context) => const AddressFormScreen(),
+        '/customer/address': (context) => const AddressListScreen(),
+        '/customer/address/save': (context) => const AddressFormScreen(),
         '/save-customer': (context) => const CustomerFormScreen(),
       },
     );

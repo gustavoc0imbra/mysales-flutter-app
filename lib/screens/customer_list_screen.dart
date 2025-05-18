@@ -91,7 +91,7 @@ class _CustomerListState extends State<CustomerListScreen> {
                         child: const Text("Editar")
                       ),
                       PopupMenuItem(
-                        onTap: () => Navigator.pushNamed(context, '/customer/address'),
+                        onTap: () => Navigator.pushNamed(context, '/customer/address', arguments: customer),
                         child: const Text("Endereços")
                       ),
                       PopupMenuItem(

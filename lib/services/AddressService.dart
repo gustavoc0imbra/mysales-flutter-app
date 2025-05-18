@@ -11,11 +11,31 @@ class Addressservice {
 
   Future<Map<String, dynamic>> searchAddress(String zipCode) async {
     final Response response = await httpCli.get(
-      Uri.parse("${this._fetchAddressUrl}/$zipCode"),
+      Uri.parse("$_fetchAddressUrl/$zipCode"),
       headers: {'Content-Type': 'application/json; charset=utf8'},
     );
 
     if(response.statusCode != HttpStatus.ok) {
+      return {"success": false, "body": response.body};
+    }
+
+    String data = utf8.decode(response.bodyBytes);
+
+    Map<String, dynamic> json = jsonDecode(data);
+
+    Address address = Address.fromSearchJson(json);
+
+    return {"success": true, "address": address};
+  }
+
+  Future<Map<String, dynamic>> saveAddress(Address address) async {
+    final Response response = await httpCli.post(
+      Uri.parse(_url),
+      headers: {'Content-Type': 'application/json; charset=utf8'},
+      body: jsonEncode(address.toJson())
+    );
+
+    if(response.statusCode != HttpStatus.created) {
       return {"success": false, "body": response.body};
     }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mysalesflutterapp/models/Address.dart';
+import 'package:mysalesflutterapp/models/Customer.dart';
 import 'package:mysalesflutterapp/services/AddressService.dart';
 
 class AddressFormScreen extends StatefulWidget {
@@ -11,6 +13,7 @@ class AddressFormScreen extends StatefulWidget {
 
 class _AddressFormState extends State<AddressFormScreen> {
   final Addressservice addressservice = Addressservice();
+  Customer customer = Customer.withId(0, "", "", "", true);
 
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _zipCodeController = TextEditingController();
@@ -18,6 +21,10 @@ class _AddressFormState extends State<AddressFormScreen> {
   final TextEditingController _neighborhoodController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
+
+  bool validateRequiredFields() {
+    return _descriptionController.text.isEmpty || _zipCodeController.text.isEmpty || _addressnumberController.text.isEmpty || _neighborhoodController.text.isEmpty || _cityController.text.isEmpty || _streetController.text.isEmpty;
+  }
 
   void fetchZipCode(String zipCode) async {
     
@@ -48,8 +55,26 @@ class _AddressFormState extends State<AddressFormScreen> {
 
   }
 
+  void saveAddress() async {
+
+    Address address = Address(
+      null,
+      customer.id,
+      _descriptionController.text,
+      _zipCodeController.text,
+      _streetController.text, neighborhood, city)
+
+    Map<String, dynamic> result = await addressservice.saveAddress();
+  }
+
   @override
   Widget build(BuildContext context) {
+    Customer customer = Customer.fromJson(ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>);
+
+    setState(() {
+      this.customer = customer;
+    });
+
     return Scaffold(
       appBar: AppBar(title: const Text('SALVAR ENDEREÇO'), centerTitle: true, backgroundColor: Colors.blue,),
       body: Padding(

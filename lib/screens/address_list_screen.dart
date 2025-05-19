@@ -46,6 +46,26 @@ class _AddressListScreenState extends State<AddressListScreen> {
     
   }
 
+  Future<void> deleteAddress(int id) async {
+    Map<String, dynamic> result = await addressService.deleteAddress(id, customer.id as int);
+
+    if(!result['success']) {
+      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
+        title: const Text("Atenção!"),
+        content: Text("Ocorreu um erro ao deletar endereço!\n${result['body']}"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => {
+              Navigator.pop(context, 'Ok'),
+            },
+            child: const Text("Ok")
+          )
+        ],
+      ));
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Customer customer = Customer.fromJson(ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>);
@@ -56,60 +76,71 @@ class _AddressListScreenState extends State<AddressListScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text("Endereços de ${this.customer.name}"), backgroundColor: Colors.blue),
-      body: ListView.builder(
-        itemCount: addresses.length,
-        itemBuilder: (context, index) {
-          final address = addresses[index];
-          
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: Colors.blueAccent,
-            child: Column(
-              children: <Widget>[
-                ListTile(
-                  leading: const CircleAvatar(backgroundColor: Colors.white, child: const Icon(Icons.map)),
-                  title: Text("${address['description']} - ${address['id']}"),
-                  subtitle: Text("${address['street']} - ${address['zipCode']}"),
-                  textColor: Colors.white,
-                  trailing: PopupMenuButton<void>(
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                      PopupMenuItem(
-                        onTap: () => Navigator.pushNamed(context, '/customer/address', arguments: customer),
-                        child: const Text("Editar")
+      body: Column(
+        children: <Widget> [
+          SizedBox(
+            height: 400,
+            child: ListView.builder(
+              itemCount: addresses.length,
+              itemBuilder: (context, index) {
+                final address = addresses[index];
+                
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  color: Colors.blueAccent,
+                  child: Column(
+                    children: <Widget>[
+                      ListTile(
+                        leading: const CircleAvatar(backgroundColor: Colors.white, child: const Icon(Icons.map)),
+                        title: Text("${address['description']} - ${address['id']}"),
+                        subtitle: Text("${address['street']} - ${address['city']} - ${address['zipCode']}"),
+                        textColor: Colors.white,
+                        trailing: PopupMenuButton<void>(
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                            PopupMenuItem(
+                              onTap: () => Navigator.pushNamed(context, '/customer/address', arguments: customer),
+                              child: const Text("Editar")
+                            ),
+                            PopupMenuItem(
+                              onTap: () => {
+                                showDialog(context: context, builder: (BuildContext builder) => AlertDialog(
+                                  title: Text("Atenção"),
+                                  content: Text("Deseja realmente deletar o endereço ${address['description']}?"),
+                                  actions: <Widget>[
+                                    ElevatedButton(
+                                      onPressed: () async => {
+                                        await deleteAddress(address['id']),
+                                        Navigator.pop(context),
+                                        fetchAddresses()
+                                      },
+                                      child: const Text("Sim")
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => {
+                                        Navigator.pop(context),
+                                      },
+                                      child: const Text("Não")
+                                    )
+                                  ],
+                                ))
+                              },
+                              child: const Text("Excluir"),
+                            ),
+                          ]
+                        ),
                       ),
-                      PopupMenuItem(
-                        /* onTap: () => {
-                          showDialog(context: context, builder: (BuildContext builder) => AlertDialog(
-                            title: Text("Atenção"),
-                            content: Text("Deseja realmente deletar o cliente ${customer['name']}?"),
-                            actions: <Widget>[
-                              ElevatedButton(
-                                onPressed: () async => {
-                                  await deleteCustomer(customer['id']),
-                                  Navigator.pop(context),
-                                  fetchCustomers()
-                                },
-                                child: const Text("Sim")
-                              ),
-                              ElevatedButton(
-                                onPressed: () => {
-                                  Navigator.pop(context),
-                                },
-                                child: const Text("Não")
-                              )
-                            ],
-                          ))
-                        }, */
-                        child: const Text("Excluir"),
-                      ),
-                    ]
+                    ],
+                    
                   ),
-                ),
-              ],
-              
+                );
+              }
             ),
-          );
-        }
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pushNamed(context, '/customer/address/save', arguments: this.customer.toJson()),
+            child: const Text("Adicionar Endereço")
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {

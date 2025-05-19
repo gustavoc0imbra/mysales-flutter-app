@@ -101,7 +101,7 @@ class _AddressFormState extends State<AddressFormScreen> {
         TextButton(
           onPressed: () => {
             Navigator.pop(context, 'Ok'),
-            Navigator.pushNamed(context, '/customers/address')
+            Navigator.pushNamed(context, '/customer/address', arguments: this.customer.toJson())
           },
           child: const Text("Ok")
         )

@@ -64,4 +64,17 @@ class AddressService {
 
     return {"success": true, "address": address};
   }
+
+  Future<Map<String, dynamic>> deleteAddress(int id, int customerId) async {
+    final Response response = await httpCli.delete(
+      Uri.parse("${_url.replaceAll("{customerId}", customerId.toString())}/${id.toString()}"),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if(response.statusCode != HttpStatus.noContent) {
+      return {"success": false, "body": response.body};
+    }
+
+    return {"success": true, "address": "Endereço excluído com sucesso!"};
+  }
 }

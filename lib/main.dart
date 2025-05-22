@@ -21,7 +21,7 @@ class MySales extends StatelessWidget {
       routes: {
         '/': (context) => const CustomerListScreen(),
         '/customer/address': (context) => const AddressListScreen(),
-        '/customer/address/save': (context) => const AddressFormScreen(),
+        AddressFormScreen.route: (context) => const AddressFormScreen(),
         '/save-customer': (context) => const CustomerFormScreen(),
       },
     );

@@ -7,13 +7,16 @@ import 'package:mysalesflutterapp/services/AddressService.dart';
 class AddressFormScreen extends StatefulWidget {
   const AddressFormScreen({super.key});
 
+  static final String route = "/customer/address/save";
+
   @override
   _AddressFormState createState() => _AddressFormState();
 }
 
 class _AddressFormState extends State<AddressFormScreen> {
   final AddressService addressservice = AddressService();
-  Customer customer = Customer.withId(0, "", "", "", true);
+  Customer _customer = Customer.withId(0, "", "", "", true);
+  var _address = null;
 
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _zipCodeController = TextEditingController();
@@ -57,17 +60,13 @@ class _AddressFormState extends State<AddressFormScreen> {
 
   void saveAddress() async {
 
-    if(customer.id == null) {
-      return;
-    }
+    if(_customer.id == null) return;
 
-    if(validateRequiredFields()) {
-      return;
-    }
+    if(validateRequiredFields()) return;
 
     Address address = Address(
       null,
-      customer.id,
+      _address.customerId ?? _customer.id,
       _descriptionController.text,
       _zipCodeController.text,
       int.parse(_addressnumberController.text),
@@ -96,12 +95,12 @@ class _AddressFormState extends State<AddressFormScreen> {
 
     showDialog(context: context, builder: (BuildContext build) => AlertDialog(
       title: const Text("Sucesso!"),
-      content: Text("O endereço de ${customer.name} foi adicionado com sucesso!\nAo clicar em OK você será redirecionado para pagína de endereços do cliente."),
+      content: Text("O endereço de ${_customer.name} foi adicionado com sucesso!\nAo clicar em OK você será redirecionado para pagína de endereços do cliente."),
       actions: <Widget>[
         TextButton(
           onPressed: () => {
             Navigator.pop(context, 'Ok'),
-            Navigator.pushNamed(context, '/customer/address', arguments: this.customer.toJson())
+            Navigator.pushNamed(context, '/customer/address', arguments: _customer.toJson())
           },
           child: const Text("Ok")
         )
@@ -109,13 +108,42 @@ class _AddressFormState extends State<AddressFormScreen> {
     ));
   }
 
+  void disposeControllers() {
+    _descriptionController.dispose();
+    _zipCodeController.dispose();
+    _addressnumberController.dispose();
+    _streetController.dispose();
+    _neighborhoodController.dispose();
+    _cityController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Customer customer = Customer.fromJson(ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>);
+    
+    Map<String, dynamic> params = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+
+    print(params);
+
+    Customer customer = Customer.withId(params['customer'].id, params['customer'].name, params['customer'].lastName, params['customer'].email, params['customer'].active);
+
+    if(params.containsKey('address')) {
+      _address = Address(params['address']['id'], params['address']['customer']['id'], params['address']['description'], params['address']['zipCode'], int.parse(params['address']['addressNumber']), params['address']['street'], params['address']['neighborhood'], params['address']['city']);
+      
+      _descriptionController.text = _address.description;
+      _zipCodeController.text = _address.zipCode;
+      _addressnumberController.text = _address.addressNumber.toString();
+      _streetController.text = _address.street;
+      _neighborhoodController.text = _address.neighborhood;
+      _cityController.text = _address.city;
+    }
+
+    /* Customer customer = Customer.fromJson(ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>);
 
     setState(() {
       this.customer = customer;
-    });
+    }); */
+
+   
 
     return Scaffold(
       appBar: AppBar(title: const Text('SALVAR ENDEREÇO'), centerTitle: true, backgroundColor: Colors.blue,),
@@ -247,5 +275,11 @@ class _AddressFormState extends State<AddressFormScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    disposeControllers();
+    super.dispose();
   }
 }

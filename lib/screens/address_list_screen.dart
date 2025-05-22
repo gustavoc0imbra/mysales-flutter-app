@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysalesflutterapp/models/Address.dart';
+import 'package:mysalesflutterapp/screens/address_form_screen.dart';
 import 'package:mysalesflutterapp/services/AddressService.dart';
 
 import '../models/Customer.dart';
@@ -98,7 +99,7 @@ class _AddressListScreenState extends State<AddressListScreen> {
                         trailing: PopupMenuButton<void>(
                           itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                             PopupMenuItem(
-                              onTap: () => Navigator.pushNamed(context, '/customer/address', arguments: customer),
+                              onTap: () => Navigator.pushNamed(context, AddressFormScreen.route, arguments: {"customer": customer, "address": address}),
                               child: const Text("Editar")
                             ),
                             PopupMenuItem(
@@ -137,7 +138,7 @@ class _AddressListScreenState extends State<AddressListScreen> {
             ),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, '/customer/address/save', arguments: this.customer.toJson()),
+            onPressed: () => Navigator.pushNamed(context, AddressFormScreen.route, arguments: {"customer": this.customer}),
             child: const Text("Adicionar Endereço")
           ),
         ],

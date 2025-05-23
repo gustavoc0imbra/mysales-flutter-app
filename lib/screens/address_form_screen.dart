@@ -141,7 +141,7 @@ class _AddressFormState extends State<AddressFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
+    /* Checagem se a rota da página possui os parâmetros */
     Map<String, dynamic> params = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
 
     if(params.containsKey('customer')) {
@@ -179,7 +179,7 @@ class _AddressFormState extends State<AddressFormScreen> {
         child: Form(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget> [
               TextField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(labelText: 'Descrição'),
@@ -187,7 +187,7 @@ class _AddressFormState extends State<AddressFormScreen> {
               ),
               const SizedBox(height: 10),
               Row(
-                children: [
+                children: <Widget> [
                   Expanded(
                     child: TextField(
                       controller: _zipCodeController,

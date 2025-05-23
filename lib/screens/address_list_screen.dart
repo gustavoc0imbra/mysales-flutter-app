@@ -71,6 +71,10 @@ class _AddressListScreenState extends State<AddressListScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    /* Checagem se a rota da página possui os parâmetros */
+    /* Map<String, dynamic> params = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>; */
+    
     Customer customer = Customer.fromJson(ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>);
 
     setState(() {

@@ -8,6 +8,8 @@ import '../models/Customer.dart';
 class AddressListScreen extends StatefulWidget {
   const AddressListScreen({super.key});
 
+  static final String route = '/customer/address';
+
   @override
   _AddressListScreenState createState() => _AddressListScreenState();
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mysalesflutterapp/models/Address.dart';
 import 'package:mysalesflutterapp/models/Customer.dart';
+import 'package:mysalesflutterapp/screens/address_list_screen.dart';
 import 'package:mysalesflutterapp/services/AddressService.dart';
 
 class AddressFormScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class AddressFormScreen extends StatefulWidget {
 }
 
 class _AddressFormState extends State<AddressFormScreen> {
-  final AddressService addressservice = AddressService();
+  final AddressService addressService = AddressService();
   Customer _customer = Customer.withId(0, "", "", "", true);
   var _address = null;
 
@@ -35,7 +36,7 @@ class _AddressFormState extends State<AddressFormScreen> {
       return;
     }
 
-    Map<String, dynamic> result = await addressservice.searchAddress(zipCode);
+    Map<String, dynamic> result = await addressService.searchAddress(zipCode);
     
     if(!result['success']) {
       showDialog(context: context, builder: (BuildContext builder) => AlertDialog(
@@ -62,11 +63,25 @@ class _AddressFormState extends State<AddressFormScreen> {
 
     if(_customer.id == null) return;
 
-    if(validateRequiredFields()) return;
+    if(validateRequiredFields()){
+      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
+        title: const Text("Atenção!"),
+        content: Text("Preencha os campos obrigatórios!"),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => {
+              Navigator.pop(context, 'Ok'),
+            },
+            child: const Text("Ok")
+          )
+        ],
+      ));
+      return;
+    }
 
     Address address = Address(
-      null,
-      _address.customerId ?? _customer.id,
+      _address?.id,
+      _address?.customerId ?? _customer.id,
       _descriptionController.text,
       _zipCodeController.text,
       int.parse(_addressnumberController.text),
@@ -75,7 +90,13 @@ class _AddressFormState extends State<AddressFormScreen> {
       _cityController.text
     );
 
-    Map<String, dynamic> result = await addressservice.saveAddress(address);
+    Map<String, dynamic> result;
+
+    if(address.id == null) {
+      result = await addressService.saveAddress(address);
+    }else {
+      result = await addressService.updateAddress(address);
+    }
 
     if (!result['success']) {
       showDialog(context: context, builder: (BuildContext build) => AlertDialog(
@@ -100,7 +121,7 @@ class _AddressFormState extends State<AddressFormScreen> {
         TextButton(
           onPressed: () => {
             Navigator.pop(context, 'Ok'),
-            Navigator.pushNamed(context, '/customer/address', arguments: _customer.toJson())
+            Navigator.pushNamed(context, AddressListScreen.route, arguments: _customer.toJson())
           },
           child: const Text("Ok")
         )
@@ -108,6 +129,7 @@ class _AddressFormState extends State<AddressFormScreen> {
     ));
   }
 
+  /* Desaloca recursos utilizados pelo objeto controller, para otimização de uso de memória */
   void disposeControllers() {
     _descriptionController.dispose();
     _zipCodeController.dispose();
@@ -122,12 +144,25 @@ class _AddressFormState extends State<AddressFormScreen> {
     
     Map<String, dynamic> params = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
 
-    print(params);
-
-    Customer customer = Customer.withId(params['customer'].id, params['customer'].name, params['customer'].lastName, params['customer'].email, params['customer'].active);
+    if(params.containsKey('customer')) {
+      setState(() {
+        _customer = Customer.withId(params['customer'].id, params['customer'].name, params['customer'].lastName, params['customer'].email, params['customer'].active);
+      });
+    }
 
     if(params.containsKey('address')) {
-      _address = Address(params['address']['id'], params['address']['customer']['id'], params['address']['description'], params['address']['zipCode'], int.parse(params['address']['addressNumber']), params['address']['street'], params['address']['neighborhood'], params['address']['city']);
+      setState(() {
+        _address = Address(
+          params['address']['id'],
+          params['address']['customer']['id'],
+          params['address']['description'],
+          params['address']['zipCode'],
+          int.parse(params['address']['addressNumber']),
+          params['address']['street'],
+          params['address']['neighborhood'],
+          params['address']['city']
+        );
+      });
       
       _descriptionController.text = _address.description;
       _zipCodeController.text = _address.zipCode;
@@ -136,14 +171,6 @@ class _AddressFormState extends State<AddressFormScreen> {
       _neighborhoodController.text = _address.neighborhood;
       _cityController.text = _address.city;
     }
-
-    /* Customer customer = Customer.fromJson(ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>);
-
-    setState(() {
-      this.customer = customer;
-    }); */
-
-   
 
     return Scaffold(
       appBar: AppBar(title: const Text('SALVAR ENDEREÇO'), centerTitle: true, backgroundColor: Colors.blue,),

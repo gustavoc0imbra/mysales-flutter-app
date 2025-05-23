@@ -20,7 +20,7 @@ class MySales extends StatelessWidget {
       initialRoute: '/', // Tela inicial agora é Novo Cliente
       routes: {
         '/': (context) => const CustomerListScreen(),
-        '/customer/address': (context) => const AddressListScreen(),
+        AddressListScreen.route: (context) => const AddressListScreen(),
         AddressFormScreen.route: (context) => const AddressFormScreen(),
         '/save-customer': (context) => const CustomerFormScreen(),
       },

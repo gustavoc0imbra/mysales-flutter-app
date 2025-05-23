@@ -65,6 +65,26 @@ class AddressService {
     return {"success": true, "address": address};
   }
 
+  Future<Map<String, dynamic>> updateAddress(Address address) async {
+    final Response response = await httpCli.put(
+      Uri.parse(_url.replaceAll("{customerId}", address.customerId.toString())),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(address.toJson())
+    );
+
+    if(response.statusCode != HttpStatus.ok) {
+      return {"success": false, "body": response.body};
+    }
+
+    String data = utf8.decode(response.bodyBytes);
+
+    Map<String, dynamic> json = jsonDecode(data);
+
+    address = Address.fromJson(json);
+
+    return {"success": true, "address": address};
+  }
+
   Future<Map<String, dynamic>> deleteAddress(int id, int customerId) async {
     final Response response = await httpCli.delete(
       Uri.parse("${_url.replaceAll("{customerId}", customerId.toString())}/${id.toString()}"),

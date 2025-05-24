@@ -12,10 +12,10 @@ class CustomerService {
     final Response response = await httpCli.post(
       Uri.parse(this.url),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(customer.toJson())
+      body: jsonEncode(customer.toJson()),
     );
 
-    if(response.statusCode != HttpStatus.created) {
+    if (response.statusCode != HttpStatus.created) {
       return {"success": false, "body": response.body};
     }
 
@@ -28,13 +28,37 @@ class CustomerService {
     return {"success": true, "customer": result};
   }
 
+  Future<Map<String, dynamic>> updateCustomer(int id, Customer customer) async {
+    print('🔄 Atualizando cliente com id: $id');
+    print('📦 Dados enviados: ${jsonEncode(customer.toJson())}');
+
+    final Response response = await httpCli.put(
+      Uri.parse("$url/$id"),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(customer.toJson()),
+    );
+
+    print('📤 Status da resposta: ${response.statusCode}');
+    print('📥 Corpo da resposta: ${response.body}');
+
+    if (response.statusCode != HttpStatus.ok) {
+      return {"success": false, "body": response.body};
+    }
+
+    String data = utf8.decode(response.bodyBytes);
+    Map<String, dynamic> json = jsonDecode(data);
+    Customer updatedCustomer = Customer.fromJson(json);
+
+    return {"success": true, "customer": updatedCustomer};
+  }
+
   Future<Map<String, dynamic>> getCustomers() async {
     final Response response = await httpCli.get(
       Uri.parse(this.url),
       headers: {'Content-Type': 'application/json'},
     );
 
-    if(response.statusCode != HttpStatus.ok) {
+    if (response.statusCode != HttpStatus.ok) {
       return {"success": false, "body": response.body};
     }
 
@@ -50,7 +74,7 @@ class CustomerService {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if(response.statusCode != HttpStatus.noContent) {
+    if (response.statusCode != HttpStatus.noContent) {
       return {"success": false, "body": response.body};
     }
 

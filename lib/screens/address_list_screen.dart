@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mysalesflutterapp/models/Address.dart';
 import 'package:mysalesflutterapp/screens/address_form_screen.dart';
 import 'package:mysalesflutterapp/services/AddressService.dart';
 
@@ -26,135 +25,189 @@ class _AddressListScreenState extends State<AddressListScreen> {
   }
 
   void fetchAddresses() async {
-    Map<String, dynamic> result = await addressService.fetchAddresses(customer.id as int);
+    Map<String, dynamic> result = await addressService.fetchAddresses(
+      customer.id as int,
+    );
 
-    if(!result['success']) {
-      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
-        title: const Text("Atenção!"),
-        content: Text("Ocorreu um erro ao carregar endereços do cliente!\n${result['body']}"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => {
-              Navigator.pop(context, 'Ok'),
-            },
-            child: const Text("Ok")
-          )
-        ],
-      ));
+    if (!result['success']) {
+      showDialog(
+        context: context,
+        builder:
+            (BuildContext build) => AlertDialog(
+              title: const Text("Atenção!"),
+              content: Text(
+                "Ocorreu um erro ao carregar endereços do cliente!\n${result['body']}",
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => {Navigator.pop(context, 'Ok')},
+                  child: const Text("Ok"),
+                ),
+              ],
+            ),
+      );
     }
 
     setState(() {
       addresses = result['addresses'];
     });
-    
   }
 
   Future<void> deleteAddress(int id) async {
-    Map<String, dynamic> result = await addressService.deleteAddress(id, customer.id as int);
+    Map<String, dynamic> result = await addressService.deleteAddress(
+      id,
+      customer.id as int,
+    );
 
-    if(!result['success']) {
-      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
-        title: const Text("Atenção!"),
-        content: Text("Ocorreu um erro ao deletar endereço!\n${result['body']}"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => {
-              Navigator.pop(context, 'Ok'),
-            },
-            child: const Text("Ok")
-          )
-        ],
-      ));
+    if (!result['success']) {
+      showDialog(
+        context: context,
+        builder:
+            (BuildContext build) => AlertDialog(
+              title: const Text("Atenção!"),
+              content: Text(
+                "Ocorreu um erro ao deletar endereço!\n${result['body']}",
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => {Navigator.pop(context, 'Ok')},
+                  child: const Text("Ok"),
+                ),
+              ],
+            ),
+      );
       return;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     /* Checagem se a rota da página possui os parâmetros */
     /* Map<String, dynamic> params = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>; */
-    
-    Customer customer = Customer.fromJson(ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>);
+
+    Customer customer = Customer.fromJson(
+      ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>,
+    );
 
     setState(() {
       this.customer = customer;
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text("Endereços de ${this.customer.name}"), backgroundColor: Colors.blue),
+      appBar: AppBar(
+        title: Text("Endereços de ${this.customer.name}"),
+        backgroundColor: Colors.blue,
+      ),
       body: Column(
-        children: <Widget> [
+        children: <Widget>[
           SizedBox(
             height: 400,
             child: ListView.builder(
               itemCount: addresses.length,
               itemBuilder: (context, index) {
                 final address = addresses[index];
-                
+
                 return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   color: Colors.blueAccent,
                   child: Column(
                     children: <Widget>[
                       ListTile(
-                        leading: const CircleAvatar(backgroundColor: Colors.white, child: const Icon(Icons.map)),
-                        title: Text("${address['description']} - ${address['id']}"),
-                        subtitle: Text("${address['street']} - ${address['city']} - ${address['zipCode']}"),
+                        leading: const CircleAvatar(
+                          backgroundColor: Colors.white,
+                          child: const Icon(Icons.map),
+                        ),
+                        title: Text(
+                          "${address['description']} - ${address['id']}",
+                        ),
+                        subtitle: Text(
+                          "${address['street']} - ${address['city']} - ${address['zipCode']}",
+                        ),
                         textColor: Colors.white,
                         trailing: PopupMenuButton<void>(
-                          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                            PopupMenuItem(
-                              onTap: () => Navigator.pushNamed(context, AddressFormScreen.route, arguments: {"customer": customer, "address": address}),
-                              child: const Text("Editar")
-                            ),
-                            PopupMenuItem(
-                              onTap: () => {
-                                showDialog(context: context, builder: (BuildContext builder) => AlertDialog(
-                                  title: Text("Atenção"),
-                                  content: Text("Deseja realmente deletar o endereço ${address['description']}?"),
-                                  actions: <Widget>[
-                                    ElevatedButton(
-                                      onPressed: () async => {
-                                        await deleteAddress(address['id']),
-                                        Navigator.pop(context),
-                                        fetchAddresses()
+                          itemBuilder:
+                              (BuildContext context) => <PopupMenuEntry>[
+                                PopupMenuItem(
+                                  onTap:
+                                      () => Navigator.pushNamed(
+                                        context,
+                                        AddressFormScreen.route,
+                                        arguments: {
+                                          "customer": customer,
+                                          "address": address,
+                                        },
+                                      ),
+                                  child: const Text("Editar"),
+                                ),
+                                PopupMenuItem(
+                                  onTap:
+                                      () => {
+                                        showDialog(
+                                          context: context,
+                                          builder:
+                                              (
+                                                BuildContext builder,
+                                              ) => AlertDialog(
+                                                title: Text("Atenção"),
+                                                content: Text(
+                                                  "Deseja realmente deletar o endereço ${address['description']}?",
+                                                ),
+                                                actions: <Widget>[
+                                                  ElevatedButton(
+                                                    onPressed:
+                                                        () async => {
+                                                          await deleteAddress(
+                                                            address['id'],
+                                                          ),
+                                                          Navigator.pop(
+                                                            context,
+                                                          ),
+                                                          fetchAddresses(),
+                                                        },
+                                                    child: const Text("Sim"),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed:
+                                                        () => {
+                                                          Navigator.pop(
+                                                            context,
+                                                          ),
+                                                        },
+                                                    child: const Text("Não"),
+                                                  ),
+                                                ],
+                                              ),
+                                        ),
                                       },
-                                      child: const Text("Sim")
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () => {
-                                        Navigator.pop(context),
-                                      },
-                                      child: const Text("Não")
-                                    )
-                                  ],
-                                ))
-                              },
-                              child: const Text("Excluir"),
-                            ),
-                          ]
+                                  child: const Text("Excluir"),
+                                ),
+                              ],
                         ),
                       ),
                     ],
-                    
                   ),
                 );
-              }
+              },
             ),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, AddressFormScreen.route, arguments: {"customer": this.customer}),
-            child: const Text("Adicionar Endereço")
+            onPressed:
+                () => Navigator.pushNamed(
+                  context,
+                  AddressFormScreen.route,
+                  arguments: {"customer": this.customer},
+                ),
+            child: const Text("Adicionar Endereço"),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {
-          fetchAddresses()
-        },
+        onPressed: () => {fetchAddresses()},
         tooltip: "Buscar",
-        child: const Icon(Icons.search)
+        child: const Icon(Icons.search),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.blue,

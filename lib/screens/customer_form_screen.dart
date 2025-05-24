@@ -10,76 +10,130 @@ class CustomerFormScreen extends StatefulWidget {
 }
 
 class _CustomerFormState extends State<CustomerFormScreen> {
-
   final CustomerService customerService = CustomerService();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
+  Customer? editingCustomer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is Customer) {
+        setState(() {
+          editingCustomer = args;
+          _nameController.text = editingCustomer!.name;
+          _lastnameController.text = editingCustomer!.lastName;
+          _emailController.text = editingCustomer!.email;
+        });
+      }
+    });
+  }
+
   bool verifyFields() {
-    return _nameController.text.isEmpty || _lastnameController.text.isEmpty || _emailController.text.isEmpty;
+    return _nameController.text.isEmpty ||
+        _lastnameController.text.isEmpty ||
+        _emailController.text.isEmpty;
   }
 
   void saveCustomer() async {
-
-    if(verifyFields()) {
-      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
-        title: const Text("Atenção!"),
-        content: Text("Favor preencher todos os campos!"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => {
-              Navigator.pop(context, 'Ok'),
-            },
-            child: const Text("Ok")
-          )
-        ],
-      ));
+    if (verifyFields()) {
+      showDialog(
+        context: context,
+        builder:
+            (BuildContext build) => AlertDialog(
+              title: const Text("Atenção!"),
+              content: const Text("Favor preencher todos os campos!"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Ok'),
+                  child: const Text("Ok"),
+                ),
+              ],
+            ),
+      );
       return;
     }
 
-    Customer customer = Customer(_nameController.text, _lastnameController.text, _emailController.text);
+    Customer customer = Customer(
+      _nameController.text,
+      _lastnameController.text,
+      _emailController.text,
+    );
 
+    // Se estiver editando, mantém o id do cliente original
+    if (editingCustomer != null) {
+      customer.id = editingCustomer!.id;
+    }
 
-    Map<String, dynamic> result = await customerService.saveCustomer(customer);
+    Map<String, dynamic> result;
+
+    // Verifica se está editando
+    if (editingCustomer != null) {
+      result = await customerService.updateCustomer(
+        editingCustomer!.id!,
+        customer,
+      );
+    } else {
+      result = await customerService.saveCustomer(customer);
+    }
 
     if (!result['success']) {
-      showDialog(context: context, builder: (BuildContext build) => AlertDialog(
-        title: const Text("Atenção!"),
-        content: Text("Ocorreu um erro ao salvar o cliente!\n${result['body']}"),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => {
-              Navigator.pop(context, 'Ok'),
-            },
-            child: const Text("Ok")
-          )
-        ],
-      ));
+      showDialog(
+        context: context,
+        builder:
+            (BuildContext build) => AlertDialog(
+              title: const Text("Atenção!"),
+              content: Text(
+                "Ocorreu um erro ao ${editingCustomer != null ? 'atualizar' : 'salvar'} o cliente!\n${result['body']}",
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.pop(context, 'Ok'),
+                  child: const Text("Ok"),
+                ),
+              ],
+            ),
+      );
       return;
     }
 
-    showDialog(context: context, builder: (BuildContext build) => AlertDialog(
-      title: const Text("Sucesso!"),
-      content: Text("O cliente ${result['customer'].name} foi adicionado com sucesso!\nAo clicar em OK você será redirecionado para pagína de clientes."),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () => {
-            Navigator.pop(context, 'Ok'),
-            Navigator.pushNamed(context, '/')
-          },
-          child: const Text("Ok")
-        )
-      ],
-    ));
-
+    showDialog(
+      context: context,
+      builder:
+          (BuildContext build) => AlertDialog(
+            title: const Text("Sucesso!"),
+            content: Text(
+              "O cliente ${result['customer'].name} foi ${editingCustomer != null ? 'atualizado' : 'adicionado'} com sucesso!\nAo clicar em OK você será redirecionado para a página de clientes.",
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, 'Ok');
+                  Navigator.pushNamed(context, '/');
+                },
+                child: const Text("Ok"),
+              ),
+            ],
+          ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('NOVO CLIENTE'), centerTitle: true,  backgroundColor: Colors.blue,),
+      appBar: AppBar(
+        title: Text(
+          editingCustomer != null ? 'EDITAR CLIENTE' : 'NOVO CLIENTE',
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.blue,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -100,7 +154,9 @@ class _CustomerFormState extends State<CustomerFormScreen> {
                       Expanded(
                         child: TextField(
                           controller: _lastnameController,
-                          decoration: const InputDecoration(labelText: 'Sobrenome'),
+                          decoration: const InputDecoration(
+                            labelText: 'Sobrenome',
+                          ),
                         ),
                       ),
                     ],
@@ -109,10 +165,10 @@ class _CustomerFormState extends State<CustomerFormScreen> {
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(labelText: 'Email')
+                    decoration: const InputDecoration(labelText: 'Email'),
                   ),
                 ],
-              )
+              ),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -127,9 +183,7 @@ class _CustomerFormState extends State<CustomerFormScreen> {
               width: double.infinity,
               child: FilledButton(
                 onPressed: () {},
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
+                style: FilledButton.styleFrom(backgroundColor: Colors.red),
                 child: const Text('Cancelar'),
               ),
             ),

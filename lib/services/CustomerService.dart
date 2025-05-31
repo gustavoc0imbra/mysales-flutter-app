@@ -29,17 +29,11 @@ class CustomerService {
   }
 
   Future<Map<String, dynamic>> updateCustomer(int id, Customer customer) async {
-    print('🔄 Atualizando cliente com id: $id');
-    print('📦 Dados enviados: ${jsonEncode(customer.toJson())}');
-
     final Response response = await httpCli.put(
-      Uri.parse("$url/$id"),
+      Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(customer.toJson()),
     );
-
-    print('📤 Status da resposta: ${response.statusCode}');
-    print('📥 Corpo da resposta: ${response.body}');
 
     if (response.statusCode != HttpStatus.ok) {
       return {"success": false, "body": response.body};

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysalesflutterapp/models/Customer.dart';
+import 'package:mysalesflutterapp/screens/product_list_screen.dart';
 import 'package:mysalesflutterapp/services/CustomerService.dart';
 
 class CustomerFormScreen extends StatefulWidget {
@@ -16,23 +17,11 @@ class _CustomerFormState extends State<CustomerFormScreen> {
   final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-  Customer? editingCustomer;
+  var editingCustomer = null;
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args != null && args is Customer) {
-        setState(() {
-          editingCustomer = args;
-          _nameController.text = editingCustomer!.name;
-          _lastnameController.text = editingCustomer!.lastName;
-          _emailController.text = editingCustomer!.email;
-        });
-      }
-    });
   }
 
   bool verifyFields() {
@@ -61,20 +50,16 @@ class _CustomerFormState extends State<CustomerFormScreen> {
     }
 
     Customer customer = Customer(
+      editingCustomer?.id,
       _nameController.text,
       _lastnameController.text,
       _emailController.text,
     );
 
-    // Se estiver editando, mantém o id do cliente original
-    if (editingCustomer != null) {
-      customer.id = editingCustomer!.id;
-    }
-
     Map<String, dynamic> result;
 
     // Verifica se está editando
-    if (editingCustomer != null) {
+    if (customer.id != null) {
       result = await customerService.updateCustomer(
         editingCustomer!.id!,
         customer,
@@ -126,6 +111,26 @@ class _CustomerFormState extends State<CustomerFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /* Checagem se a rota da página possui os parâmetros */
+    Map<String, dynamic> params =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+
+    if (params.isNotEmpty) {
+      setState(() {
+        editingCustomer = Customer.withId(
+          params['id'],
+          params['name'],
+          params['lastName'],
+          params['email'],
+          params['active'],
+        );
+      });
+
+      _nameController.text = editingCustomer.name;
+      _lastnameController.text = editingCustomer.lastName;
+      _emailController.text = editingCustomer.email;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -218,7 +223,7 @@ class _CustomerFormState extends State<CustomerFormScreen> {
               IconButton(
                 icon: const Icon(Icons.category_rounded, color: Colors.white),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/save-customer');
+                  Navigator.pushNamed(context, ProductListScreen.route);
                 },
                 tooltip: "Produtos",
               ),

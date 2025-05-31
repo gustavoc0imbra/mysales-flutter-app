@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysalesflutterapp/screens/address_form_screen.dart';
+import 'package:mysalesflutterapp/screens/product_list_screen.dart';
 import 'package:mysalesflutterapp/services/AddressService.dart';
 
 import '../models/Customer.dart';
@@ -227,7 +228,10 @@ class _AddressListScreenState extends State<AddressListScreen> {
               IconButton(
                 icon: const Icon(Icons.category_rounded, color: Colors.white),
                 onPressed: () {
-                  // Ir para tela de produtos
+                  Navigator.pushReplacementNamed(
+                    context,
+                    ProductListScreen.route,
+                  );
                 },
                 tooltip: "Produtos",
               ),

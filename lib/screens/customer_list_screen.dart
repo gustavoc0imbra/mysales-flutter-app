@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysalesflutterapp/models/Customer.dart';
+import 'package:mysalesflutterapp/screens/product_list_screen.dart';
 import 'package:mysalesflutterapp/services/CustomerService.dart';
 
 class CustomerListScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class _CustomerListState extends State<CustomerListScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () => {Navigator.pop(context, 'Ok')},
+                  onPressed: () => Navigator.pop(context, 'Ok'),
                   child: const Text("Ok"),
                 ),
               ],
@@ -61,7 +62,7 @@ class _CustomerListState extends State<CustomerListScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  onPressed: () => {Navigator.pop(context, 'Ok')},
+                  onPressed: () => Navigator.pop(context, 'Ok'),
                   child: const Text("Ok"),
                 ),
               ],
@@ -69,6 +70,7 @@ class _CustomerListState extends State<CustomerListScreen> {
       );
       return;
     }
+    fetchCustomers(); // Atualiza a lista após exclusão
   }
 
   @override
@@ -108,13 +110,11 @@ class _CustomerListState extends State<CustomerListScreen> {
                         (BuildContext context) => <PopupMenuEntry>[
                           PopupMenuItem(
                             onTap: () {
-                              Future.delayed(Duration.zero, () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/save-customer',
-                                  arguments: Customer.fromJson(customer),
-                                );
-                              });
+                              Navigator.pushNamed(
+                                context,
+                                '/save-customer',
+                                arguments: customer,
+                              );
                             },
                             child: const Text("Editar"),
                           ),
@@ -129,38 +129,32 @@ class _CustomerListState extends State<CustomerListScreen> {
                           ),
                           PopupMenuItem(
                             onTap:
-                                () => {
-                                  showDialog(
-                                    context: context,
-                                    builder:
-                                        (BuildContext builder) => AlertDialog(
-                                          title: Text("Atenção"),
-                                          content: Text(
-                                            "Deseja realmente deletar o cliente ${customer['name']}?",
-                                          ),
-                                          actions: <Widget>[
-                                            ElevatedButton(
-                                              onPressed:
-                                                  () async => {
-                                                    await deleteCustomer(
-                                                      customer['id'],
-                                                    ),
-                                                    Navigator.pop(context),
-                                                    fetchCustomers(),
-                                                  },
-                                              child: const Text("Sim"),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed:
-                                                  () => {
-                                                    Navigator.pop(context),
-                                                  },
-                                              child: const Text("Não"),
-                                            ),
-                                          ],
+                                () => showDialog(
+                                  context: context,
+                                  builder:
+                                      (BuildContext builder) => AlertDialog(
+                                        title: const Text("Atenção"),
+                                        content: Text(
+                                          "Deseja realmente deletar o cliente ${customer['name']}?",
                                         ),
-                                  ),
-                                },
+                                        actions: <Widget>[
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              await deleteCustomer(
+                                                customer['id'],
+                                              );
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("Sim"),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed:
+                                                () => Navigator.pop(context),
+                                            child: const Text("Não"),
+                                          ),
+                                        ],
+                                      ),
+                                ),
                             child: const Text("Excluir"),
                           ),
                         ],
@@ -172,7 +166,7 @@ class _CustomerListState extends State<CustomerListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {Navigator.pushNamed(context, '/save-customer')},
+        onPressed: () => Navigator.pushNamed(context, '/save-customer'),
         tooltip: "Adicionar",
         child: const Icon(Icons.add),
       ),
@@ -186,22 +180,24 @@ class _CustomerListState extends State<CustomerListScreen> {
               IconButton(
                 icon: const Icon(Icons.group, color: Colors.white),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/');
+                  Navigator.pushReplacementNamed(context, '/'); // Clientes
                 },
                 tooltip: "Clientes",
-                isSelected: true,
               ),
               IconButton(
                 icon: const Icon(Icons.category_rounded, color: Colors.white),
                 onPressed: () {
-                  // Ir para tela de produtos
+                  Navigator.pushReplacementNamed(
+                    context,
+                    ProductListScreen.route,
+                  ); // Produtos
                 },
                 tooltip: "Produtos",
               ),
               IconButton(
                 icon: const Icon(Icons.shopping_cart, color: Colors.white),
                 onPressed: () {
-                  //Ir para tela de vendas
+                  Navigator.pushReplacementNamed(context, '/sales'); // Vendas
                 },
                 tooltip: "Vendas",
               ),

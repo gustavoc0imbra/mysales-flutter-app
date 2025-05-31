@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mysalesflutterapp/models/Product.dart';
+import 'package:mysalesflutterapp/screens/customer_list_screen.dart';
 import 'package:mysalesflutterapp/screens/product_form_screen.dart';
 import 'package:mysalesflutterapp/services/ProductService.dart';
 
@@ -162,8 +163,8 @@ class _ProductListState extends State<ProductListScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, ProductFormScreen.route),
         tooltip: "Adicionar Produto",
-        child: const Icon(Icons.add),
         backgroundColor: Colors.green,
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Colors.green,
@@ -175,7 +176,7 @@ class _ProductListState extends State<ProductListScreen> {
               IconButton(
                 icon: const Icon(Icons.group, color: Colors.white),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/customers');
+                  Navigator.pushNamed(context, CustomerListScreen.route);
                 },
                 tooltip: "Clientes",
               ),

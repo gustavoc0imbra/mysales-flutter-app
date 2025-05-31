@@ -21,14 +21,12 @@ class MySales extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const CustomerListScreen(),
+        CustomerListScreen.route: (context) => const CustomerListScreen(),
         AddressListScreen.route: (context) => const AddressListScreen(),
         AddressFormScreen.route: (context) => const AddressFormScreen(),
-        '/save-customer': (context) => const CustomerFormScreen(),
-        ProductListScreen.route:
-            (context) => const ProductListScreen(), // <-- NOVO
-        ProductFormScreen.route:
-            (context) => const ProductFormScreen(), // <-- NOVO
+        CustomerFormScreen.route: (context) => const CustomerFormScreen(),
+        ProductListScreen.route: (context) => const ProductListScreen(), // <-- NOVO
+        ProductFormScreen.route: (context) => const ProductFormScreen(), // <-- NOVO
       },
     );
   }

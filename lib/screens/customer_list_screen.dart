@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mysalesflutterapp/models/Customer.dart';
 import 'package:mysalesflutterapp/screens/product_list_screen.dart';
 import 'package:mysalesflutterapp/services/CustomerService.dart';
 
 class CustomerListScreen extends StatefulWidget {
   const CustomerListScreen({super.key});
+
+  static final String route = '/';
 
   @override
   _CustomerListState createState() => _CustomerListState();

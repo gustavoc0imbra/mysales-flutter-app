@@ -7,6 +7,8 @@ class CustomerFormScreen extends StatefulWidget {
   @override
   _CustomerFormState createState() => _CustomerFormState();
 
+  static final String route = '/save-customer';
+
   const CustomerFormScreen({super.key});
 }
 
@@ -112,24 +114,30 @@ class _CustomerFormState extends State<CustomerFormScreen> {
   @override
   Widget build(BuildContext context) {
     /* Checagem se a rota da página possui os parâmetros */
-    Map<String, dynamic> params =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
 
-    if (params.isNotEmpty) {
-      setState(() {
-        editingCustomer = Customer.withId(
-          params['id'],
-          params['name'],
-          params['lastName'],
-          params['email'],
-          params['active'],
-        );
-      });
+    if(ModalRoute.of(context)?.settings.arguments != null) {
+      Map<String, dynamic> params = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
 
-      _nameController.text = editingCustomer.name;
-      _lastnameController.text = editingCustomer.lastName;
-      _emailController.text = editingCustomer.email;
+      print(params);
+
+      if (params.isNotEmpty) {
+        setState(() {
+          editingCustomer = Customer.withId(
+            params['id'],
+            params['name'],
+            params['lastName'],
+            params['email'],
+            params['active'],
+          );
+        });
+
+        _nameController.text = editingCustomer.name;
+        _lastnameController.text = editingCustomer.lastName;
+        _emailController.text = editingCustomer.email;
+      }
     }
+
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -190,16 +198,6 @@ class _CustomerFormState extends State<CustomerFormScreen> {
                 onPressed: () {},
                 style: FilledButton.styleFrom(backgroundColor: Colors.red),
                 child: const Text('Cancelar'),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/endereco');
-                },
-                child: const Text('Endereços'),
               ),
             ),
           ],
